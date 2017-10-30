@@ -1,4 +1,4 @@
-package common;
+package com.github.todo.domain;
 
 /**
  * Created with IntelliJ IDEA.

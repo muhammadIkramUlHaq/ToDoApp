@@ -1,4 +1,4 @@
-package common;
+package com.github.todo.common;
 
 /**
  * Created with IntelliJ IDEA.

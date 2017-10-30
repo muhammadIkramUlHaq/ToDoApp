@@ -1,4 +1,4 @@
-package common;
+package com.github.todo.repository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,6 +7,7 @@ package common;
  * Time: 3:20 AM
  */
 
+import com.github.todo.domain.ToDo;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ToDoRepository extends CrudRepository<ToDo, Long> {
