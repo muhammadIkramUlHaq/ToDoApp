@@ -29,7 +29,7 @@ public class ToDoController {
      * @param task  String
      * @return    String
      */
-    @PostMapping(path="/addToDo")
+    @PostMapping(path="/post")
     public @ResponseBody String createNewTask (@RequestParam String task) {
         return toDoService.createNewTask(task);
     }
@@ -40,7 +40,7 @@ public class ToDoController {
      * @param task      String
      * @return          String
      */
-    @PutMapping(path="/updateToDo")
+    @PutMapping(path="/put")
     public @ResponseBody String updateTask (@RequestParam Long taskId, @RequestParam String task) {
        return toDoService.updateTask(taskId,task);
     }
@@ -50,7 +50,7 @@ public class ToDoController {
      * @param taskId  Long
      * @return        ToDoObject
      */
-    @GetMapping(path="/getToDo")
+    @GetMapping(path="/get")
     public @ResponseBody ToDo getTask(@RequestParam Long taskId) {
        return toDoService.getTask(taskId);
     }
@@ -59,7 +59,7 @@ public class ToDoController {
      * This method will call a service to get ALL TO DO tasks
      * @return   Iterable <To DO>
      */
-    @GetMapping(path="/getAllToDos")
+    @GetMapping(path="/getAll")
     public @ResponseBody Iterable<ToDo> getAllTasks() {
         return toDoService.getAllTasks();
     }
@@ -68,7 +68,7 @@ public class ToDoController {
      * @param taskId  Long
      * @return        String
      */
-    @DeleteMapping(path="/deleteToDo")
+    @DeleteMapping(path="/delete")
     public @ResponseBody String deleteTask(@RequestParam Long taskId) {
          return toDoService.deleteTask(taskId);
     }
