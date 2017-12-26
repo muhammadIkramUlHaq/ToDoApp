@@ -7,32 +7,47 @@ package com.github.todo.domain;
  * Time: 3:16 AM
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.NonNull;
+import lombok.Value;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
+@JsonIgnoreProperties(value = {"createdAt"}, allowGetters = true)
+@Value /* to generate equals, hashCode, getters & toString ( immutable ) */
+@JsonDeserialize(builder = ToDo.Builder.class)
 @Entity
 public class ToDo {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
-    private String task;
+    private final String id;
 
-    public Long getId() {
-        return id;
-    }
+    @NotNull
+    @NotEmpty
+    private final String title;
 
-    public void setId(Long id) {
+    private final boolean completed ;
+    private final Date createdAt;
+
+    @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder", toBuilder = true)
+    private ToDo(String id, @NonNull String title, boolean completed, Date createdAt)
+    {
         this.id = id;
+        this.title = title;
+        this.completed = completed;
+        this.createdAt = createdAt;
     }
 
-    public String getTask() {
-        return task;
-    }
-
-    public void setTask(String task) {
-        this.task = task;
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Builder
+    {
     }
 
 
