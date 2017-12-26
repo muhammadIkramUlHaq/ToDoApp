@@ -5,110 +5,117 @@ import com.github.todo.repository.ToDoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Ikram
- * Date: 10/29/17
- * Time: 9:55 PM
- * To change this template use File | Settings | File Templates.
  */
 
 @Service
 public class ToDoService {
-    @Autowired
     private ToDoRepository toDoRepository;
     private Logger logger = LoggerFactory.getLogger(ToDoService.class);
 
+
+    @Autowired
+    public  ToDoService (ToDoRepository toDoRepository){
+        this.toDoRepository = toDoRepository;
+    }
+
     /**
-     * This Method will create new task in TO DO
-     * @param task  String
-     * @return  String
+     * This Method will create new toDo in TODOList
+     * @param toDo  ToDo
+     * @return  ToDo
      */
-    public String createNewTask (String task) {
+    public ToDo createToDo (ToDo toDo) {
         logger.info("Creating New Task ... !");
-        ToDo toDoElement = new ToDo();
-        toDoElement.setTask(task);
-        toDoRepository.save(toDoElement);
+        ToDo toDoInstance = toDoRepository.save(toDo);
         logger.info("Saved new Task in Entity ToDo!");
-        return "Saved";
-    }
-
-    /**
-     * This method will Update the task for Provided taskID
-     * @param taskId
-     * @param task
-     * @return   String
-     */
-    public String updateTask (Long taskId, String task) {
-        String responseString = "";
-        if (toDoRepository.exists(taskId)) {
-            logger.info("Updating Task ... !");
-            ToDo toDoElement = toDoRepository.findOne(taskId);
-            toDoElement.setTask(task);
-            toDoRepository.save(toDoElement);
-            logger.info("Updated Task with Id " + taskId + " in Entity ToDo!");
-            responseString = "Updated!";
-        }
-        else {
-            logger.warn("No Task with Id " + taskId + " exists in Entity ToDo!");
-            responseString = "No Task with Given ID exist!";
-        }
-        return responseString;
-    }
-
-    /**
-     *  This method will retrieve a task from TODOList with provided taskId
-     * @param taskId
-     * @return  ToDoObject
-     */
-    public ToDo getTask(Long taskId) {
-            ToDo toDoInstance = null;
-        if (toDoRepository.exists(taskId)){
-            logger.info("Retrieving Task ... !");
-            toDoInstance = toDoRepository.findOne(taskId);
-            logger.info("Retrieved Task with Id " + taskId + " from Entity ToDo!");
-        }
-        else  {
-            logger.warn("Task with ID " + taskId + " does not exist in Entity ToDo!");
-        }
         return toDoInstance;
     }
 
     /**
-     * This method will delete the task for provided taskId
-     * @param taskId
-     * @return String
+     * This method will Update the todo for Provided ID
+     * @param id
+     * @param toDo ToDo
+     * @return   ResponseEntity<ToDo>
      */
-    public String deleteTask(Long taskId) {
-        String responseString = "";
-        if  (toDoRepository.exists(taskId)){
-            logger.info("Deleting Task ... !");
-             toDoRepository.delete(taskId);
-             logger.info("Deleted Task with Id " + taskId + " from Entity ToDo!");
-             responseString = "Deleted!";
-        }
-        else if (taskId == null) {
-             responseString = deleteAllTask();
+
+    public ResponseEntity<ToDo> updateToDo (String id, ToDo toDo) {
+        ToDo toDoData = toDoRepository.findOne(id);
+        if(toDoData == null) {
+            logger.warn("No Task with Id " + id + " exists in Entity ToDo!");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         else {
-             logger.warn("No Task with Id " + taskId + " exists in Entity ToDo!");
-             responseString = "Task with Given Id not Found!";
+            logger.info("Updating Task ... !");
+            ToDo updatedToDo = toDoRepository.save(toDo);
+            logger.info("Updated Task with Id " + id + " in Entity ToDo!");
+            return new ResponseEntity<>(updatedToDo, HttpStatus.OK);
         }
-        return responseString;
     }
 
     /**
-     * This method will retrieve all the tasks from TODOList
+     *  This method will retrieve a todo from TODOList with provided taskId
+     * @param toDoId
+     * @return  ToDoObject
+     */
+
+    public ResponseEntity<ToDo> getToDo(String toDoId) {
+        ToDo toDo = null;
+        if (toDoRepository.exists(toDoId)){
+            logger.info("Retrieving Task ... !");
+            toDo = toDoRepository.findOne(toDoId);
+            logger.info("Retrieved Task with Id " + toDoId + " from Entity ToDo!");
+            return new ResponseEntity<>(toDo, HttpStatus.OK);
+        }
+        else  {
+            logger.warn("Task with ID " + toDoId + " does not exist in Entity ToDo!");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * This method will delete the todo for provided taskId
+     * @param id
+     * @return void
+     */
+
+    public void deleteTask(String id) {
+        if  (toDoRepository.exists(id)){
+             logger.info("Deleting Task ... !");
+             toDoRepository.delete(id);
+             logger.info("Deleted Task with Id " + id + " from Entity ToDo!");
+        }
+        else if (id == null) {
+            deleteAllToDos();
+        }
+        else {
+            logger.warn("No Task with Id " + id + " exists in Entity ToDo!");
+        }
+    }
+
+    /**
+     * This method will retrieve all the todos from TODOList
      * @return  Iterable TODOObject
      */
-    public Iterable<ToDo> getAllTasks() {
-        Iterable<ToDo> iterateInstance = null;
+
+    public Iterable<ToDo> getAllToDos() {
+        Iterable<ToDo> iterateInstance = Collections.EMPTY_LIST;
         if  (toDoRepository.count() > 0) {
+            Sort sortByCreatedAtDesc = new Sort(Sort.Direction.DESC, "createdAt");
             iterateInstance = toDoRepository.findAll();
+
             logger.info("Retrieved all Tasks from Entity ToDo!");
         }
         else {
@@ -118,21 +125,17 @@ public class ToDoService {
     }
 
     /**
-     * This Method will delete all tasks for TODOList
+     * This Method will delete all todos for TODOList
      * @return
      */
-    public String deleteAllTask() {
-        String responseString ="";
+    public void deleteAllToDos() {
         if (toDoRepository.count() > 0){
             logger.info("Deleting All Tasks ... ");
             toDoRepository.deleteAll();
             logger.info("Deleted All Tasks from Entity ToDo!");
-            responseString = "Deleted All Tasks!";
         }
         else {
             logger.warn("No Task exists in Entity ToDo!");
-            responseString =  "No Task to be Deleted!";
         }
-        return responseString;
     }
 }
