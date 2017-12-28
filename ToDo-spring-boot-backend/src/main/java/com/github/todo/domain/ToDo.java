@@ -10,9 +10,7 @@ package com.github.todo.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Generated;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.Entity;
@@ -21,10 +19,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.UUID;
 
 @JsonIgnoreProperties(value = {"createdAt"}, allowGetters = true)
 @Value /* to generate equals, hashCode, getters & toString ( immutable ) */
 @JsonDeserialize(builder = ToDo.Builder.class)
+@NoArgsConstructor(force = true, access = AccessLevel.PACKAGE)
 @Entity
 public class ToDo {
     @Id
@@ -37,13 +37,14 @@ public class ToDo {
     private final boolean completed ;
     private final Date createdAt;
 
+
     @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder", toBuilder = true)
     private ToDo(String id, @NonNull String title, boolean completed, Date createdAt)
     {
-        this.id = id;
+        this.id = generateString();
         this.title = title;
         this.completed = completed;
-        this.createdAt = createdAt;
+        this.createdAt = new Date();
     }
 
     @JsonPOJOBuilder(withPrefix = "")
@@ -51,5 +52,9 @@ public class ToDo {
     {
     }
 
+    public static String generateString() {
+        String uuid = UUID.randomUUID().toString();
+        return uuid;
+    }
 
 }
