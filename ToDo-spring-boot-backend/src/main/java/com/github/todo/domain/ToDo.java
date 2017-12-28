@@ -10,6 +10,7 @@ package com.github.todo.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Generated;
 import lombok.NonNull;
 import lombok.Value;
 import org.hibernate.validator.constraints.NotEmpty;
