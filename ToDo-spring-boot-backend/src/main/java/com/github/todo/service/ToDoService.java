@@ -59,9 +59,9 @@ public class ToDoService {
         }
         else {
             logger.info("Updating Task ... !");
-            ToDo updatedToDo = toDoRepository.save(toDo);
+             toDoData = toDoRepository.save(toDo);
             logger.info("Updated Task with Id " + id + " in Entity ToDo!");
-            return new ResponseEntity<>(updatedToDo, HttpStatus.OK);
+            return new ResponseEntity<>(toDoData, HttpStatus.OK);
         }
     }
 

@@ -41,7 +41,7 @@ public class ToDo {
     @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder", toBuilder = true)
     private ToDo(String id, @NonNull String title, boolean completed, Date createdAt)
     {
-        this.id = generateString();
+        this.id = generateString(id);
         this.title = title;
         this.completed = completed;
         this.createdAt = new Date();
@@ -52,9 +52,13 @@ public class ToDo {
     {
     }
 
-    public static String generateString() {
-        String uuid = UUID.randomUUID().toString();
-        return uuid;
+    public static String generateString(String id) {
+
+        String returnString = id;
+        if(returnString.equals(null)) {
+           returnString = UUID.randomUUID().toString();
+        }
+        return returnString;
     }
 
 }
